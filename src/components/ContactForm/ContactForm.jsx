@@ -3,7 +3,8 @@ import { Formik, Form, Field } from 'formik';
 import css from './ContactForm.module.css';
 import { nanoid } from 'nanoid';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'components/redux/contactsSlice';
+import { addContactThunk } from '../../redux/operations';
+import { selectContacts } from '../../redux/selectors';
 
 const initialValues = {
   name: '',
@@ -17,7 +18,7 @@ const schema = yup.object().shape({
 
 export const ContactForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contactsScope.contacts);
+  const contacts = useSelector(selectContacts);
 
   const handleSubmit = ({ name, number }, { resetForm }) => {
     addName(name, number);
@@ -34,9 +35,8 @@ export const ContactForm = () => {
     const existContact = contacts.some(
       elem => elem.name.toLowerCase() === name.toLowerCase()
     );
-
     if (!existContact) {
-      dispatch(addContact(newContact));
+      dispatch(addContactThunk(newContact));
     } else {
       alert(`${name} is already in contacts`);
     }

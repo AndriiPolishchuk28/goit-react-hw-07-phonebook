@@ -1,24 +1,20 @@
-import { removeContact } from 'components/redux/contactsSlice';
+import { useEffect } from 'react';
 import css from './ContactList.module.css';
 import { useDispatch, useSelector } from 'react-redux';
+import { getContacts, deleteContactThunk } from '../../redux/operations';
+import { selectFilteredItems, selectIsLoading } from '../../redux/selectors';
+import { Loader } from 'components/Loader/Loader';
 
 export const ContactList = () => {
-  const contacts = useSelector(state => state.contactsScope.contacts);
-  const filter = useSelector(state => state.contactsScope.filter);
+  const filteredContacts = useSelector(selectFilteredItems);
+  const isLoading = useSelector(selectIsLoading);
 
   const dispatch = useDispatch();
 
-  const visibleContacts = () => {
-    const normalizeFilter = filter.toLowerCase();
-    return contacts.filter(elem =>
-      elem.name.toLowerCase().includes(normalizeFilter)
-    );
-  };
-  const filteredContacts = visibleContacts();
+  useEffect(() => {
+    dispatch(getContacts());
+  }, [dispatch]);
 
-  const deleteContact = id => {
-    dispatch(removeContact(id));
-  };
   return (
     <ul className={css.list}>
       {filteredContacts?.map(({ name, id, number }) => {
@@ -28,7 +24,7 @@ export const ContactList = () => {
             <span>{number}</span>
             <button
               className={css.btn}
-              onClick={() => deleteContact(id)}
+              onClick={() => dispatch(deleteContactThunk(id))}
               type="button"
             >
               Delete
@@ -36,6 +32,7 @@ export const ContactList = () => {
           </li>
         );
       })}
+      {isLoading && <Loader />}
     </ul>
   );
 };
