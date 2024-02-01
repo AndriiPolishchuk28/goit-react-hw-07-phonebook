@@ -23,10 +23,9 @@ export const getContacts = createAsyncThunk(
   'contacts/fetch',
   async (_, thunkApi) => {
     try {
-      toast('here your contacts');
       return await fetchContacts();
     } catch (error) {
-      toast.error('error');
+      toast.error(error.message);
       return thunkApi.rejectWithValue(error.message);
     }
   }
@@ -38,6 +37,7 @@ export const addContactThunk = createAsyncThunk(
     try {
       return await postContact(newContact);
     } catch (error) {
+      toast.error(error.message);
       return thunkApi.rejectWithValue(error.message);
     }
   }
@@ -49,6 +49,7 @@ export const deleteContactThunk = createAsyncThunk(
     try {
       return await deleteContact(id);
     } catch (error) {
+      toast.error(error.message);
       return thunkApi.rejectWithValue(error.message);
     }
   }
